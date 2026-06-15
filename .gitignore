@@ -1,3 +1,18 @@
-build
-mx.scratch
-!.settings
+# Build output
+Debug/
+Release/
+build/
+
+#generated stuff contained in ioc
+Drivers/
+Middleware/
+
+# CubeIDE workspace metadata
+.settings/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Backup files CubeMX sometimes leaves
+*.ioc.bak

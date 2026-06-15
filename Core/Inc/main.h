@@ -75,10 +75,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define RCC_OSC32_IN_Pin GPIO_PIN_14
-#define RCC_OSC32_IN_GPIO_Port GPIOC
-#define RCC_OSC32_OUT_Pin GPIO_PIN_15
-#define RCC_OSC32_OUT_GPIO_Port GPIOC
 #define RCC_OSC_IN_Pin GPIO_PIN_0
 #define RCC_OSC_IN_GPIO_Port GPIOF
 #define RCC_OSC_OUT_Pin GPIO_PIN_1
@@ -97,6 +93,10 @@ void Error_Handler(void);
 #define T_SWO_GPIO_Port GPIOB
 #define STBY_Pin GPIO_PIN_5
 #define STBY_GPIO_Port GPIOB
+#define PROFILE1_Pin GPIO_PIN_8
+#define PROFILE1_GPIO_Port GPIOB
+#define PROFILE2_Pin GPIO_PIN_9
+#define PROFILE2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

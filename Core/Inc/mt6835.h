@@ -202,6 +202,7 @@ extern "C"
     MT6835_Status MT6835_WriteAutoCalSpeed(MT6835_Handle *dev, MT6835_CalSpeed speed);
     MT6835_Status MT6835_ReadAutoCalStatus(MT6835_Handle *dev, MT6835_CalState *state);
     void MT6835_BLOCKING_CALIBRATE(MT6835_Handle *dev);
+    void MT6835_NONBLOCKING_CALIBRATE(MT6835_Handle *dev);
 
     MT6835_Status MT6835_SendZeroCommand(MT6835_Handle *dev);
     MT6835_Status MT6835_WriteZeroPosition(MT6835_Handle *dev, uint32_t angle_raw);

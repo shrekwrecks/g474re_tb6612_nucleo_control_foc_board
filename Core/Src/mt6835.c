@@ -25,6 +25,7 @@
 #include "mt6835.h"
 #include "stm32g4xx_ll_spi.h"
 #include "stm32g4xx_ll_dma.h"
+#include "cmsis_os2.h"
 
 /* ── Module-level state (single encoder) ───────────────────────────────── */
 
@@ -320,6 +321,30 @@ void MT6835_BLOCKING_CALIBRATE(MT6835_Handle *dev)
     }
 }
 
+/* write speed continuously until cal starts (manually assert AUTOCAL pin to VDD) */
+void MT6835_NONBLOCKING_CALIBRATE(MT6835_Handle *dev)
+{
+    MT6835_CalState cal_state = MT6835_CAL_NONE;
+    while (cal_state != MT6835_CAL_RUNNING)
+    {
+        MT6835_WriteAutoCalSpeed(dev, MT6835_CAL_SPEED_200);
+        MT6835_ReadAutoCalStatus(dev, &cal_state);
+        osDelay(50);
+    }
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+
+    /* cal has started, poll until finished */
+    do
+    {
+        osDelay(50);
+        MT6835_ReadAutoCalStatus(dev, &cal_state);
+    } while (cal_state == MT6835_CAL_RUNNING);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+    if (cal_state != MT6835_CAL_SUCCESS)
+    { /* handle failure */
+    }
+}
+
 // ---------------------------------------------------------
 // Send the zero-set command (latches current position as zero in RAM)
 // The MT6835_CMD_ZERO command tells the chip to sample its current
@@ -476,17 +501,29 @@ MT6835_Status MT6835_ReadAngleFast(MT6835_Handle *dev, MT6835_AngleResult *resul
 #define ANGLE_AVG_SAMPLES 256
 uint32_t MT6835_read_angle_avg(MT6835_Handle *dev)
 {
-    uint64_t acc = 0;
     MT6835_AngleResult result;
-    for (int i = 0; i < ANGLE_AVG_SAMPLES; i++)
-    {
-        MT6835_Status status = MT6835_ReadAngleFast(dev, &result);
-        if (status == MT6835_OK)
-            acc += result.raw;
-    }
-    return (uint32_t)(acc / ANGLE_AVG_SAMPLES);
-}
 
+    // Get reference sample
+    while (MT6835_ReadAngle(dev, &result) != MT6835_OK)
+        ;
+    uint32_t ref = result.raw;
+
+    int32_t sum = 0;
+    int count = 1;
+
+    for (int i = 1; i < ANGLE_AVG_SAMPLES; i++)
+    {
+        if (MT6835_ReadAngle(dev, &result) != MT6835_OK)
+            continue;
+
+        // Sign-extend 21-bit delta to handle wraparound
+        int32_t delta = (int32_t)((result.raw - ref) << 11) >> 11;
+        sum += delta;
+        count++;
+    }
+
+    return (uint32_t)(ref + (sum / count)) & 0x1FFFFF;
+}
 /* ── DMA non-blocking path ──────────────────────────────────────────────── */
 
 /**

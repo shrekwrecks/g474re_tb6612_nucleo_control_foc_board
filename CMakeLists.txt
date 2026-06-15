@@ -46,15 +46,21 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 /home/akdommers/Desktop/stm32_projects/g474re_tb6612_nucleo_control_foc_board/Core/Src/lib_usbpd.c
 Core/Src/mt6835.c
-Core/Src/tb6612.c
-# /home/akdommers/Desktop/stm32_projects/g474re_tb6612_nucleo_control_foc_board/Core/Src/usbpd_main.c
-# /home/akdommers/Desktop/stm32_projects/g474re_tb6612_nucleo_control_foc_board/Core/Src/usbpd_phy.c
+Core/Src/tasks.c
+/home/akdommers/Desktop/stm32_libraries/tb6612/tb6612.c
+/home/akdommers/Desktop/stm32_libraries/current_sense/current_sense.c
+/home/akdommers/Desktop/stm32_libraries/filters/filters.c
+
     # Add user sources here
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    /home/akdommers/Desktop/stm32_libraries/tb6612
+    /home/akdommers/Desktop/stm32_libraries/current_sense
+    /home/akdommers/Desktop/stm32_libraries/filters
+    /home/akdommers/Desktop/stm32_libraries/protocol
     Core/Inc
 )
 
@@ -72,4 +78,15 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
 
     # Add user defined libraries
+)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -O2)
+else() 
+    target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Og)
+endif()
+
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE 
+    -Wdouble-promotion
+    -Wfloat-conversion
 )

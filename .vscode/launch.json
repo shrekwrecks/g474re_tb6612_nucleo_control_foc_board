@@ -1,22 +1,46 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
 
         {
-            "type": "stlinkgdbtarget",
+            "name": "Cortex Debug",
+            "preLaunchTask": "Build",
+            "type": "cortex-debug",
+            "gdbPath": "/usr/bin/gdb-multiarch",
             "request": "launch",
-            "name": "STM32Cube: Launch ST-Link GDB Server",
-            "origin": "snippet",
+            "servertype": "openocd",
+            "serverpath": "openocd",
             "cwd": "${workspaceFolder}",
-            "preBuild": "${command:st-stm32-ide-debug-launch.build}",
-            "imagesAndSymbols": [
-                {
-                    "imageFileName": "${command:st-stm32-ide-debug-launch.get-projects-binary-from-context1}"
-                }
-            ]
+            "executable": "/home/akdommers/Desktop/stm32_projects/g474re_tb6612_nucleo_control_foc_board/build/Debug/g474re_tb6612_nucleo_control_foc_board.elf",
+            "device": "STM32G474RETx",
+            "configFiles": [
+                "/home/akdommers/Desktop/stm32_projects/g474re_tb6612_nucleo_control_foc_board/nucleo_control_foc_board.cfg",
+                // "interface/stlink.cfg",
+                // "target/stm32g4x.cfg"
+            ],
+            "svdFile": "${workspaceFolder}/STM32G474xx.svd",
+            "interface": "swd",
+            // "runToEntryPoint": "main",
+            "armToolchainPath": "/usr/bin",
+            "liveWatch": {
+            "enabled": true,
+            "samplesPerSecond": 20,
+            },
+            "swoConfig": {
+                "source": "probe",
+                "enabled": true,
+                "swoFrequency": 10000000,
+                "cpuFrequency": 170000000,
+                "decoders": [
+                    {
+                        "type": "console",
+                        "label": "Mcu-SWO-Trace",
+                        "port": 0
+                    }
+                ]
+            },
+            
+            "showDevDebugOutput": "parsed"
         }
     ]
 }
